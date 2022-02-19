@@ -18,17 +18,15 @@ public class DataProcessor<K, V> implements Consumer<ConsumerRecord<K, V>> {
 
     @Override
     public void accept(ConsumerRecord<K, V> kvConsumerRecord) {
-        if (kvConsumerRecord.value() instanceof CoordinateWithId) {
-            try {
-                Thread.sleep(100);
-                ProducerRecord<String, CoordinateWithId> record =
-                        new ProducerRecord(outputTopic, kvConsumerRecord.key(), kvConsumerRecord.value());
-                System.out.println("Middle process, id: " + kvConsumerRecord.key());
-                producer.send(record);
-            } catch (InterruptedException | SerializationException e) {
-                System.out.println("ERROR!!!! " + e.getMessage());
-                e.printStackTrace();
-            }
+        try {
+            Thread.sleep(10);
+            ProducerRecord<String, CoordinateWithId> record =
+                    new ProducerRecord(outputTopic, kvConsumerRecord.key(), kvConsumerRecord.value());
+            System.out.println("Middle process, id: " + kvConsumerRecord.key());
+            producer.send(record);
+        } catch (InterruptedException | SerializationException e) {
+            System.out.println("ERROR!!!! " + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

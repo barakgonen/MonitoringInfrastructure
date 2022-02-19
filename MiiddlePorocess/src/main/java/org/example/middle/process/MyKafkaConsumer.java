@@ -20,7 +20,7 @@ public class MyKafkaConsumer<K, V> extends KafkaConsumer<K, V> {
     private static Properties getProps() {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "group7");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "group10");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "io.confluent.kafka.serializers.KafkaAvroDeserializer");
         props.put("schema.registry.url", "http://localhost:8081");

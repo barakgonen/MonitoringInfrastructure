@@ -5,7 +5,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.util.Properties;
 
-public class MyKafkaProducer extends KafkaProducer {
+public class MyKafkaProducer<K, V> extends KafkaProducer<K, V> {
     public MyKafkaProducer() {
         super(getProps());
     }
