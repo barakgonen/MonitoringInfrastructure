@@ -18,7 +18,7 @@ public class App {
                         String.valueOf(counter), DataGenerator.generateData());
                 System.out.println("Start process, id: " + record.key());
                 kafkaProducer.send(record);
-                Thread.sleep(1000);
+                Thread.sleep(1);
             } catch (InterruptedException | SerializationException e) {
                 System.out.println("ERROR!!!! " + e.getMessage());
                 e.printStackTrace();
