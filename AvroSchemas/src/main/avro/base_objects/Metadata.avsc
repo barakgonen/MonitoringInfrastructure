@@ -13,6 +13,14 @@
     {
       "name": "startTimeMillis",
       "type": "long"
+    },
+    {
+      "name": "sendTimeMillis",
+      "type": "long"
+    },
+    {
+      "name": "diffSinceSendMillis",
+      "type": "long"
     }
   ]
 }

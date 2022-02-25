@@ -9,6 +9,8 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/AvroSchemas" />
+            <option value="$PROJECT_DIR$/DataCollector" />
           </set>
         </option>
       </GradleProjectSettings>

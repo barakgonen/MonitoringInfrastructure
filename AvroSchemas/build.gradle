@@ -11,7 +11,7 @@ plugins {
 }
 
 group 'org.example'
-version '0.3.0_Init'
+version '0.5.0_Init'
 
 repositories {
     mavenLocal()
