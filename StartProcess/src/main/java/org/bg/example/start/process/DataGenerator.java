@@ -19,11 +19,13 @@ public class DataGenerator {
     }
 
     public static CoordinateWithId generateData() {
-        long timeStamp = Instant.now().toEpochMilli();
+        long nowTimeMillis = Instant.now().toEpochMilli();
         return CoordinateWithId.newBuilder()
                 .setId(Metadata.newBuilder()
                         .setContextId(UUID.randomUUID().toString())
-                        .setStartTimeMillis(timeStamp)
+                        .setStartTimeMillis(nowTimeMillis)
+                        .setSendTimeMillis(nowTimeMillis)
+                        .setDiffSinceSendMillis(nowTimeMillis - nowTimeMillis)
                         .build())
                 .setPosition(Coordinate.newBuilder()
                         .setAltitude(getNextRandomDouble())

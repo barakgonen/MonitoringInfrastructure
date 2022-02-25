@@ -3,32 +3,36 @@
  */
 package org.bg.example.start.process;
 
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.errors.SerializationException;
-import org.bg.avro.structures.base.objects.CoordinateWithId;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class App {
     public static void main(String[] args) {
+        final Logger LOGGER = Logger.getLogger(ProducerAction.class);
 
-        MyKafkaProducer kafkaProducer = new MyKafkaProducer();
-        int counter = 1;
-        while (true) {
-            try {
-                ProducerRecord<String, CoordinateWithId> record = new ProducerRecord<>("FROM-START-PROCESS",
-                        String.valueOf(counter), DataGenerator.generateData());
-                System.out.println("Start process, id: " + record.key());
-                kafkaProducer.send(record);
-                Thread.sleep(1);
-            } catch (InterruptedException | SerializationException e) {
-                System.out.println("ERROR!!!! " + e.getMessage());
-                e.printStackTrace();
+        Collection<Runnable> actionsToPreform = new ArrayList<>();
+        boolean shouldInitiateProducer = Utils.getEnvBool("SHOULD_INITIALIZE_PRODUCER");
+        boolean shouldInitiateConsumer = Utils.getEnvBool("SHOULD_INITIALIZE_CONSUMER");
+
+        if (shouldInitiateProducer) {
+            if (shouldInitiateConsumer) {
+                LOGGER.info("Running handler which consumes messages from specific topic and than produces them to " +
+                        "another one");
+                actionsToPreform.add(new ConsumerAndProducerAction());
+            } else {
+                LOGGER.info("Running handler which produces them to specific topic");
+                actionsToPreform.add(new ProducerAction());
             }
-            counter++;
+            ExecutorService executorService = Executors.newFixedThreadPool(actionsToPreform.size());
+            actionsToPreform.forEach(executorService::execute);
+            executorService.shutdown();
+        } else {
+            LOGGER.warn("You don't want to produce any message, means you want to consume, " +
+                    "but this case is not relevant right now..");
         }
-
-// When you're finished producing records, you can flush the producer to ensure it has all been written to Kafka and
-// then close the producer to free its resources.
-//        producer.flush();
-//        producer.close();
     }
 }
