@@ -31,7 +31,7 @@ public class DataProcessor<K, V> implements Consumer<ConsumerRecord<K, V>> {
                     ((CoordinateWithId) kvConsumerRecord.value()).getId().getSendTimeMillis());
             ProducerRecord<String, CoordinateWithId> record = new ProducerRecord(outputTopic,
                     kvConsumerRecord.key(), kvConsumerRecord.value());
-            System.out.println("Middle process, id: " + kvConsumerRecord.key());
+            LOGGER.info("Middle process, id: " + kvConsumerRecord.key());
             producer.send(record);
             int messageNumber = Integer.parseInt(String.valueOf(kvConsumerRecord.key()));
             if (messageNumber % 100 == 0) {
