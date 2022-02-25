@@ -14,7 +14,6 @@ plugins {
 repositories {
     // Use JCenter for resolving dependencies.
     mavenCentral()
-    mavenLocal()
     jcenter()
     maven {
         url("https://packages.confluent.io/maven/")
@@ -23,10 +22,10 @@ repositories {
 
 dependencies {
     // Use JUnit test framework.
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.2'
 
     // This dependency is used by the application.
-    implementation 'com.google.guava:guava:29.0-jre'
+    implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'org.apache.avro:avro:1.11.0'
 // https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
     implementation 'org.apache.kafka:kafka-clients:3.0.0'
