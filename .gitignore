@@ -8,6 +8,8 @@
 *.ctxt
 # From https://github.com/github/gitignore/blob/master/Gradle.gitignore
 .gradle/6.8/executionHistory/
+.gradle/6.8/
+.gradle/buildOutputCleanup/
 build/
 
 # Ignore Gradle GUI config
