@@ -1,0 +1,6 @@
+com/example/monitoring/rest/RestApplication.java
+ com.example.monitoring.rest.RestApplication
+com/example/monitoring/rest/RestClientConfig.java
+ com.example.monitoring.rest.RestClientConfig
+com/example/monitoring/rest/QueriesController.java
+ com.example.monitoring.rest.QueriesController

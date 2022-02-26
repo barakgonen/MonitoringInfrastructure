@@ -75,18 +75,63 @@ services:
       - kafka
       - zookeeper
 
-  process_b:
-    image: test:0.1.1
-    environment:
-      SHOULD_INITIALIZE_PRODUCER: 'true'
-      SHOULD_INITIALIZE_CONSUMER: 'true'
-      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
-      PRODUCE_TO_TOPIC: 'B'
-      CONSUME_FROM_TOPIC: 'A'
-      LOG_LEVEL: 'DEBUG'
-      KAFKA_ADDRESS: '192.168.1.40:9092'
-      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
-      SLEEP_BETWEEN_SENDS_MILLIS: '15'
-    depends_on:
-      - kafka
-      - zookeeper
+#  process_b:
+#    image: test:0.1.1
+#    environment:
+#      SHOULD_INITIALIZE_PRODUCER: 'true'
+#      SHOULD_INITIALIZE_CONSUMER: 'true'
+#      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+#      CONSUME_FROM_TOPIC: 'A'
+#      PRODUCE_TO_TOPIC: 'B'
+#      LOG_LEVEL: 'DEBUG'
+#      KAFKA_ADDRESS: '192.168.1.40:9092'
+#      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
+#      SLEEP_BETWEEN_SENDS_MILLIS: '15'
+#    depends_on:
+#      - kafka
+#      - zookeeper
+#  process_c:
+#    image: test:0.1.1
+#    environment:
+#      SHOULD_INITIALIZE_PRODUCER: 'true'
+#      SHOULD_INITIALIZE_CONSUMER: 'true'
+#      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+#      CONSUME_FROM_TOPIC: 'B'
+#      PRODUCE_TO_TOPIC: 'C'
+#      LOG_LEVEL: 'DEBUG'
+#      KAFKA_ADDRESS: '192.168.1.40:9092'
+#      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
+#      SLEEP_BETWEEN_SENDS_MILLIS: '15'
+#    depends_on:
+#      - kafka
+#      - zookeeper
+#  process_d:
+#    image: test:0.1.1
+#    environment:
+#      SHOULD_INITIALIZE_PRODUCER: 'true'
+#      SHOULD_INITIALIZE_CONSUMER: 'true'
+#      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+#      CONSUME_FROM_TOPIC: 'C'
+#      PRODUCE_TO_TOPIC: 'D'
+#      LOG_LEVEL: 'DEBUG'
+#      KAFKA_ADDRESS: '192.168.1.40:9092'
+#      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
+#      SLEEP_BETWEEN_SENDS_MILLIS: '15'
+#    depends_on:
+#      - kafka
+#      - zookeeper
+#  process_e:
+#    image: test:0.1.1
+#    environment:
+#      SHOULD_INITIALIZE_PRODUCER: 'true'
+#      SHOULD_INITIALIZE_CONSUMER: 'true'
+#      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+#      CONSUME_FROM_TOPIC: 'D'
+#      PRODUCE_TO_TOPIC: 'E'
+#      LOG_LEVEL: 'DEBUG'
+#      KAFKA_ADDRESS: '192.168.1.40:9092'
+#      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
+#      SLEEP_BETWEEN_SENDS_MILLIS: '15'
+#    depends_on:
+#      - kafka
+#      - zookeeper

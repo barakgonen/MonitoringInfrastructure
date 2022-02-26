@@ -1,8 +1,6 @@
 package org.example.data.collector;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.avro.Schema;
-import org.apache.avro.specific.SpecificRecord;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -20,10 +18,8 @@ import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -53,7 +49,7 @@ public class ElasticSearchWriter<K, V> {
     }
 
     public void createIndexes() {
-        this.topics.forEach(s -> createIndex(s.toLowerCase(Locale.ROOT)));
+        this.topics.forEach(s -> createIndex("from_" + s.toLowerCase(Locale.ROOT)));
     }
 
     private void createIndex(String indexName) {
@@ -83,7 +79,7 @@ public class ElasticSearchWriter<K, V> {
 
             }
 
-            BulkResponse response =hlrc.bulk(request, RequestOptions.DEFAULT);
+            BulkResponse response = hlrc.bulk(request, RequestOptions.DEFAULT);
             System.out.println("took: " + response.getTook() + ", request.size: " + request.requests().size());
 
         } catch (IOException e) {
