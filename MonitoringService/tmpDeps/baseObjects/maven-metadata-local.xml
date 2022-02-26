@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>org.example</groupId>
+  <artifactId>baseObjects</artifactId>
+  <versioning>
+    <latest>4.0-IddCoordinate</latest>
+    <release>4.0-IddCoordinate</release>
+    <versions>
+      <version>4.0-IddCoordinate</version>
+    </versions>
+    <lastUpdated>20220211100709</lastUpdated>
+  </versioning>
+</metadata>

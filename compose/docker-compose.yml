@@ -62,27 +62,30 @@ services:
       - 5601:5601
 
   process_a:
-    image: test:0.1.1
+    image: test:0.1.2
     environment:
       SHOULD_INITIALIZE_PRODUCER: 'true'
-      NUMBER_OF_MESSAGES_TO_PRODUCE: '1000'
+      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
       PRODUCE_TO_TOPIC: 'A'
+      PROCESS_NAME: 'process_a'
       LOG_LEVEL: 'DEBUG'
       KAFKA_ADDRESS: '192.168.1.40:9092'
       SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
-      SLEEP_BETWEEN_SENDS_MILLIS: '500'
+      SLEEP_BETWEEN_SENDS_MILLIS: '1000'
     depends_on:
       - kafka
       - zookeeper
+      - schema-registry
 
   process_b:
-    image: test:0.1.1
+    image: test:0.1.2
     environment:
       SHOULD_INITIALIZE_PRODUCER: 'true'
       SHOULD_INITIALIZE_CONSUMER: 'true'
       NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
       CONSUME_FROM_TOPIC: 'A'
       PRODUCE_TO_TOPIC: 'B'
+      PROCESS_NAME: 'process_b'
       LOG_LEVEL: 'DEBUG'
       KAFKA_ADDRESS: '192.168.1.40:9092'
       SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
@@ -90,48 +93,70 @@ services:
     depends_on:
       - kafka
       - zookeeper
-#  process_c:
-#    image: test:0.1.1
-#    environment:
-#      SHOULD_INITIALIZE_PRODUCER: 'true'
-#      SHOULD_INITIALIZE_CONSUMER: 'true'
-#      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
-#      CONSUME_FROM_TOPIC: 'B'
-#      PRODUCE_TO_TOPIC: 'C'
-#      LOG_LEVEL: 'DEBUG'
-#      KAFKA_ADDRESS: '192.168.1.40:9092'
-#      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
-#      SLEEP_BETWEEN_SENDS_MILLIS: '15'
-#    depends_on:
-#      - kafka
-#      - zookeeper
-#  process_d:
-#    image: test:0.1.1
-#    environment:
-#      SHOULD_INITIALIZE_PRODUCER: 'true'
-#      SHOULD_INITIALIZE_CONSUMER: 'true'
-#      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
-#      CONSUME_FROM_TOPIC: 'C'
-#      PRODUCE_TO_TOPIC: 'D'
-#      LOG_LEVEL: 'DEBUG'
-#      KAFKA_ADDRESS: '192.168.1.40:9092'
-#      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
-#      SLEEP_BETWEEN_SENDS_MILLIS: '15'
-#    depends_on:
-#      - kafka
-#      - zookeeper
-#  process_e:
-#    image: test:0.1.1
-#    environment:
-#      SHOULD_INITIALIZE_PRODUCER: 'true'
-#      SHOULD_INITIALIZE_CONSUMER: 'true'
-#      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
-#      CONSUME_FROM_TOPIC: 'D'
-#      PRODUCE_TO_TOPIC: 'E'
-#      LOG_LEVEL: 'DEBUG'
-#      KAFKA_ADDRESS: '192.168.1.40:9092'
-#      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
-#      SLEEP_BETWEEN_SENDS_MILLIS: '15'
-#    depends_on:
-#      - kafka
-#      - zookeeper
+      - schema-registry
+  process_c:
+    image: test:0.1.2
+    environment:
+      SHOULD_INITIALIZE_PRODUCER: 'true'
+      SHOULD_INITIALIZE_CONSUMER: 'true'
+      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+      CONSUME_FROM_TOPIC: 'B'
+      PRODUCE_TO_TOPIC: 'C'
+      PROCESS_NAME: 'process_c'
+      LOG_LEVEL: 'DEBUG'
+      KAFKA_ADDRESS: '192.168.1.40:9092'
+      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
+      SLEEP_BETWEEN_SENDS_MILLIS: '15'
+    depends_on:
+      - kafka
+      - zookeeper
+      - schema-registry
+  process_d:
+    image: test:0.1.2
+    environment:
+      SHOULD_INITIALIZE_PRODUCER: 'true'
+      SHOULD_INITIALIZE_CONSUMER: 'true'
+      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+      CONSUME_FROM_TOPIC: 'C'
+      PRODUCE_TO_TOPIC: 'D'
+      LOG_LEVEL: 'DEBUG'
+      PROCESS_NAME: 'process_d'
+      KAFKA_ADDRESS: '192.168.1.40:9092'
+      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
+      SLEEP_BETWEEN_SENDS_MILLIS: '15'
+    depends_on:
+      - kafka
+      - zookeeper
+      - schema-registry
+  process_e:
+    image: test:0.1.2
+    environment:
+      SHOULD_INITIALIZE_PRODUCER: 'true'
+      SHOULD_INITIALIZE_CONSUMER: 'true'
+      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+      CONSUME_FROM_TOPIC: 'D'
+      PRODUCE_TO_TOPIC: 'E'
+      PROCESS_NAME: 'process_e'
+      LOG_LEVEL: 'DEBUG'
+      KAFKA_ADDRESS: '192.168.1.40:9092'
+      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
+      SLEEP_BETWEEN_SENDS_MILLIS: '15'
+    depends_on:
+      - kafka
+      - zookeeper
+      - schema-registry
+
+  data_collector:
+    image: data_collector:0.1.1
+    environment:
+      KAFKA_ADDRESS: '192.168.1.40:9092'
+      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
+      LOG_LEVEL: 'DEBUG'
+      ELASTIC_HOST: '192.168.1.40'
+      ELASTIC_USER_NAME: 'elastic'
+      ELASTIC_PASSWORD: 'Aa123456'
+    depends_on:
+      - kafka
+      - zookeeper
+      - elasticsearch
+      - schema-registry

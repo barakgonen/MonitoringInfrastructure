@@ -1,2 +1,0 @@
-com/example/monitoring/rest/RestApplicationTests.java
- com.example.monitoring.rest.RestApplicationTests

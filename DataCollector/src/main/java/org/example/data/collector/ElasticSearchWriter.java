@@ -20,9 +20,13 @@ import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.GetIndexRequest;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
+
+import static org.example.data.collector.Constants.*;
 
 public class ElasticSearchWriter<K, V> {
     private static final Logger LOGGER = Logger.getLogger(ElasticSearchWriter.class);
@@ -35,10 +39,10 @@ public class ElasticSearchWriter<K, V> {
         final CredentialsProvider credentialsProvider =
                 new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY,
-                new UsernamePasswordCredentials("elastic", "Aa123456"));
+                new UsernamePasswordCredentials(ELASTIC_USER_NAME, ELASTIC_PASSWORD));
 
         this.elasticsearchClient = RestClient.builder(
-                        new HttpHost("localhost", 9200))
+                        new HttpHost(ELASTIC_HOST, 9200))
                 .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                         .setDefaultCredentialsProvider(credentialsProvider));
         this.hlrc = new RestHighLevelClient(elasticsearchClient);
@@ -53,7 +57,8 @@ public class ElasticSearchWriter<K, V> {
         BulkRequest request = new BulkRequest();
         try {
             for (ConsumerRecord<K, V> kvConsumerRecord : kvConsumerRecords) {
-                Map<String, String> map = mapper.readValue(kvConsumerRecord.value().toString(), Map.class);
+                Map map = mapper.readValue(kvConsumerRecord.value().toString(), Map.class);
+                map.put("reporterProcess", getReporterProcess(kvConsumerRecord));
                 request.add(new IndexRequest(kafkaTopicToIndex(kvConsumerRecord.topic()))
                         .id(String.valueOf(kvConsumerRecord.offset()))
                         .source(map));
@@ -93,5 +98,10 @@ public class ElasticSearchWriter<K, V> {
         } else {
             LOGGER.info("index with name: " + indexName + ", already exists, not re-creating");
         }
+    }
+
+    private String getReporterProcess(ConsumerRecord<K, V> kvConsumerRecord) {
+        byte[] bytes = kvConsumerRecord.headers().headers("reporterProcess").iterator().next().value();
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 }

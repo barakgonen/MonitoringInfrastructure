@@ -2,6 +2,7 @@ package org.bg.example.generic.process;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.SerializationException;
+import org.apache.kafka.common.header.Header;
 import org.apache.log4j.Logger;
 import org.bg.avro.structures.base.objects.CoordinateWithId;
 
@@ -41,6 +42,18 @@ public class ProducerAction implements Runnable {
                 try {
                     ProducerRecord<String, CoordinateWithId> record = new ProducerRecord<>(outputTopic,
                             String.valueOf(i), DataGenerator.generateData());
+                    record.headers().add(new Header() {
+                        @Override
+                        public String key() {
+                            return "reporterProcess";
+                        }
+
+                        @Override
+                        public byte[] value() {
+                            String v = Utils.getEnvString("PROCESS_NAME");
+                            return v.getBytes();
+                        }
+                    });
                     LOGGER.debug("Sent message number: " + i);
                     if (i % 100 == 0) {
                         LOGGER.info("Sent message number: " + i);

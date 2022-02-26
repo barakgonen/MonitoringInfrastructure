@@ -48,7 +48,7 @@ public class MyKafkaConsumer<K, V> extends KafkaConsumer<K, V> {
             ConsumerRecords<K, V> records = this.poll(Duration.of(5, ChronoUnit.SECONDS));
             if (records.isEmpty()) {
                 numberOfEmptyPollsToExit--;
-            } else if (invoker != null){
+            } else if (invoker != null) {
                 invoker.accept(records);
                 try {
                     Thread.sleep(5000);

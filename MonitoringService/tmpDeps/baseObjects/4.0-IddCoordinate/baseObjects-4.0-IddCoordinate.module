@@ -1,0 +1,69 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "org.example",
+    "module": "baseObjects",
+    "version": "4.0-IddCoordinate",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.1"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "baseObjects-4.0-IddCoordinate.jar",
+          "url": "baseObjects-4.0-IddCoordinate.jar",
+          "size": 11587,
+          "sha512": "14b9389ccd95c63d760f0d583cf2d64823d5c7b2b021cd93101b79b5cc237464c48cc797ec64348fcf0068f4105bc9d9816e5743dd05f5f96e128e6d61037a53",
+          "sha256": "6dbeeea68c569f0bd8f051807ebd6d21e9661232c5a30770e567ef40e58b450d",
+          "sha1": "cc56e4aec67197b0e30e4ba3b81fe4777ab867ad",
+          "md5": "fa10c052ee7775c071b9b5effbf177af"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "org.apache.avro",
+          "module": "avro",
+          "version": {
+            "requires": "1.11.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "baseObjects-4.0-IddCoordinate.jar",
+          "url": "baseObjects-4.0-IddCoordinate.jar",
+          "size": 11587,
+          "sha512": "14b9389ccd95c63d760f0d583cf2d64823d5c7b2b021cd93101b79b5cc237464c48cc797ec64348fcf0068f4105bc9d9816e5743dd05f5f96e128e6d61037a53",
+          "sha256": "6dbeeea68c569f0bd8f051807ebd6d21e9661232c5a30770e567ef40e58b450d",
+          "sha1": "cc56e4aec67197b0e30e4ba3b81fe4777ab867ad",
+          "md5": "fa10c052ee7775c071b9b5effbf177af"
+        }
+      ]
+    }
+  ]
+}

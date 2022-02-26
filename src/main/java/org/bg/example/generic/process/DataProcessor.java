@@ -3,6 +3,7 @@ package org.bg.example.generic.process;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.SerializationException;
+import org.apache.kafka.common.header.Header;
 import org.apache.log4j.Logger;
 import org.bg.avro.structures.base.objects.CoordinateWithId;
 
@@ -31,6 +32,18 @@ public class DataProcessor<K, V> implements Consumer<ConsumerRecord<K, V>> {
                     ((CoordinateWithId) kvConsumerRecord.value()).getId().getSendTimeMillis());
             ProducerRecord<String, CoordinateWithId> record = new ProducerRecord(outputTopic,
                     kvConsumerRecord.key(), kvConsumerRecord.value());
+            record.headers().add(new Header() {
+                @Override
+                public String key() {
+                    return "reporterProcess";
+                }
+
+                @Override
+                public byte[] value() {
+                    String v = Utils.getEnvString("PROCESS_NAME");
+                    return v.getBytes();
+                }
+            });
             LOGGER.info("Middle process, id: " + kvConsumerRecord.key());
             producer.send(record);
             int messageNumber = Integer.parseInt(String.valueOf(kvConsumerRecord.key()));
