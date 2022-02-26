@@ -9,7 +9,8 @@
 # From https://github.com/github/gitignore/blob/master/Gradle.gitignore
 .gradle/6.8/executionHistory/
 .gradle/6.8/
-.gradle/buildOutputCleanup/
+.gradle/buildOutputCleanup/cache.properties
+.gradle/buildOutputCleanup/buildOutputCleanup.lock
 build/
 
 # Ignore Gradle GUI config
