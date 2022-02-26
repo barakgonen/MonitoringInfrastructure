@@ -3,11 +3,7 @@
  */
 package org.example.data.collector;
 
-import org.apache.kafka.common.PartitionInfo;
-
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -16,7 +12,8 @@ public class App {
 
     public static void main(String[] args) {
         MyKafkaConsumer consumer = new MyKafkaConsumer();
-        List<String> topics = (List<String>) consumer.listTopics().keySet().stream().filter(o -> !o.toString().startsWith("_")).collect(Collectors.toList());
+        List<String> topics = (List<String>) consumer.listTopics().keySet().stream()
+                .filter(o -> !o.toString().startsWith("_")).collect(Collectors.toList());
         System.out.println(topics);
         consumer.close();
         ElasticSearchWriter elasticSearchWriter = new ElasticSearchWriter(topics);
@@ -29,6 +26,5 @@ public class App {
             specificTopicConsumer.subscribe(List.of(topic));
             executorService.submit(() -> specificTopicConsumer.startConsume());
         }
-        System.out.println("BGBG");
     }
 }

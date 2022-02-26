@@ -6,9 +6,9 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -17,6 +17,7 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.GetIndexRequest;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ElasticSearchWriter<K, V> {
+    private static final Logger LOGGER = Logger.getLogger(ElasticSearchWriter.class);
     private Collection<String> topics;
     private RestClientBuilder elasticsearchClient;
     private RestHighLevelClient hlrc;
@@ -37,31 +39,13 @@ public class ElasticSearchWriter<K, V> {
 
         this.elasticsearchClient = RestClient.builder(
                         new HttpHost("localhost", 9200))
-                .setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
-                    @Override
-                    public HttpAsyncClientBuilder customizeHttpClient(
-                            HttpAsyncClientBuilder httpClientBuilder) {
-                        return httpClientBuilder
-                                .setDefaultCredentialsProvider(credentialsProvider);
-                    }
-                });
+                .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                        .setDefaultCredentialsProvider(credentialsProvider));
         this.hlrc = new RestHighLevelClient(elasticsearchClient);
     }
 
     public void createIndexes() {
-        this.topics.forEach(s -> createIndex("from_" + s.toLowerCase(Locale.ROOT)));
-    }
-
-    private void createIndex(String indexName) {
-
-        try {
-            CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
-//            HashMap<String, String> mapping = new HashMap<>();
-//            createIndexRequest.mapping(mapping);
-            hlrc.indices().create(createIndexRequest, RequestOptions.DEFAULT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.topics.forEach(s -> createIndex(kafkaTopicToIndex(s)));
     }
 
     public void writeToIndex(ConsumerRecords<K, V> kvConsumerRecords) {
@@ -70,20 +54,44 @@ public class ElasticSearchWriter<K, V> {
         try {
             for (ConsumerRecord<K, V> kvConsumerRecord : kvConsumerRecords) {
                 Map<String, String> map = mapper.readValue(kvConsumerRecord.value().toString(), Map.class);
-
-                request.add(
-                        new IndexRequest(kvConsumerRecord.topic().toLowerCase(Locale.ROOT))
-                                .id(String.valueOf(kvConsumerRecord.offset()))
-                                .source(map));
-
-
+                request.add(new IndexRequest(kafkaTopicToIndex(kvConsumerRecord.topic()))
+                        .id(String.valueOf(kvConsumerRecord.offset()))
+                        .source(map));
             }
 
             BulkResponse response = hlrc.bulk(request, RequestOptions.DEFAULT);
-            System.out.println("took: " + response.getTook() + ", request.size: " + request.requests().size());
+            LOGGER.info("request has been processed, took: " + response.getTook() + " ms,"
+                    + "request size: " + request.requests().size());
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private String kafkaTopicToIndex(String topicName) {
+        return "from_" + topicName.toLowerCase(Locale.ROOT);
+    }
+
+    private boolean isIndexExists(String indexName) {
+        try {
+            return hlrc.indices().exists(new GetIndexRequest(indexName), RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+        return false;
+    }
+
+    private void createIndex(String indexName) {
+        if (!isIndexExists(indexName)) {
+            LOGGER.info("create new index for name: " + indexName);
+            try {
+                CreateIndexRequest createIndexRequest = new CreateIndexRequest(indexName);
+                hlrc.indices().create(createIndexRequest, RequestOptions.DEFAULT);
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+            }
+        } else {
+            LOGGER.info("index with name: " + indexName + ", already exists, not re-creating");
         }
     }
 }

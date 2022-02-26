@@ -1,13 +1,12 @@
 package org.example.data.collector;
 
 import org.apache.kafka.clients.consumer.ConsumerRecords;
-
 import java.util.function.Consumer;
 
 public class DataProcessor<K, V> implements Consumer<ConsumerRecords<K, V>> {
-    private ElasticSearchWriter elasticSearchWriter;
+    private final ElasticSearchWriter<K, V> elasticSearchWriter;
 
-    public DataProcessor(ElasticSearchWriter elasticSearchWriter) {
+    public DataProcessor(ElasticSearchWriter<K, V> elasticSearchWriter) {
         this.elasticSearchWriter = elasticSearchWriter;
     }
 

@@ -47,7 +47,7 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: 'zookeeper:2181'
 
   elasticsearch:
-    image: elasticsearch:7.8.1
+    image: elasticsearch:7.16.2
     ports:
       - 9200:9200
     environment:
@@ -55,7 +55,7 @@ services:
       xpack.security.enabled: 'true'
       ELASTIC_PASSWORD: 'Aa123456'
   kibana:
-    image: kibana:7.8.1
+    image: kibana:7.16.2
     volumes:
       - ./kibana.yml:/usr/share/kibana/config/kibana.yml
     ports:
@@ -65,31 +65,31 @@ services:
     image: test:0.1.1
     environment:
       SHOULD_INITIALIZE_PRODUCER: 'true'
-      NUMBER_OF_MESSAGES_TO_PRODUCE: '100000'
+      NUMBER_OF_MESSAGES_TO_PRODUCE: '1000'
       PRODUCE_TO_TOPIC: 'A'
       LOG_LEVEL: 'DEBUG'
       KAFKA_ADDRESS: '192.168.1.40:9092'
       SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
-      SLEEP_BETWEEN_SENDS_MILLIS: '20'
+      SLEEP_BETWEEN_SENDS_MILLIS: '500'
     depends_on:
       - kafka
       - zookeeper
 
-#  process_b:
-#    image: test:0.1.1
-#    environment:
-#      SHOULD_INITIALIZE_PRODUCER: 'true'
-#      SHOULD_INITIALIZE_CONSUMER: 'true'
-#      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
-#      CONSUME_FROM_TOPIC: 'A'
-#      PRODUCE_TO_TOPIC: 'B'
-#      LOG_LEVEL: 'DEBUG'
-#      KAFKA_ADDRESS: '192.168.1.40:9092'
-#      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
-#      SLEEP_BETWEEN_SENDS_MILLIS: '15'
-#    depends_on:
-#      - kafka
-#      - zookeeper
+  process_b:
+    image: test:0.1.1
+    environment:
+      SHOULD_INITIALIZE_PRODUCER: 'true'
+      SHOULD_INITIALIZE_CONSUMER: 'true'
+      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+      CONSUME_FROM_TOPIC: 'A'
+      PRODUCE_TO_TOPIC: 'B'
+      LOG_LEVEL: 'DEBUG'
+      KAFKA_ADDRESS: '192.168.1.40:9092'
+      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
+      SLEEP_BETWEEN_SENDS_MILLIS: '15'
+    depends_on:
+      - kafka
+      - zookeeper
 #  process_c:
 #    image: test:0.1.1
 #    environment:

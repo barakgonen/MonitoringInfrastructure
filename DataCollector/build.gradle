@@ -27,16 +27,14 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:31.0.1-jre'
     implementation 'org.apache.avro:avro:1.11.0'
-// https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
     implementation 'org.apache.kafka:kafka-clients:3.0.0'
-// https://mvnrepository.com/artifact/io.confluent/kafka-avro-serializer
     implementation 'io.confluent:kafka-avro-serializer:7.0.1'
-    // https://mvnrepository.com/artifact/org.elasticsearch.client/elasticsearch-rest-high-level-client
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.8.1'
-    // https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch
-    implementation 'org.elasticsearch:elasticsearch:7.8.1'
-
-
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.16.2'
+    implementation 'org.elasticsearch:elasticsearch:7.16.2'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.17.0'
+    implementation 'org.apache.logging.log4j:log4j-slf4j-impl:2.17.0'
+    implementation 'log4j:log4j:1.2.17'
 }
 
 application {
