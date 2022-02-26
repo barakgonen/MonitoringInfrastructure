@@ -1,0 +1,26 @@
+{
+  "namespace": "org.bg.avro.structures.base.objects",
+  "type": "record",
+  "name": "Metadata",
+  "fields": [
+    {
+      "name": "contextId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "startTimeMillis",
+      "type": "long"
+    },
+    {
+      "name": "sendTimeMillis",
+      "type": "long"
+    },
+    {
+      "name": "diffSinceSendMillis",
+      "type": "long"
+    }
+  ]
+}

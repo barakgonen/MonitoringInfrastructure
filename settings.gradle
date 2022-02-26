@@ -1,0 +1,3 @@
+rootProject.name = 'MonitoringInfra'
+
+include(":AvroSchemas")
