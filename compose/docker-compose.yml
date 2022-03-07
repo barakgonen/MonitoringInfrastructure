@@ -40,13 +40,13 @@ services:
       - POSTGRES_DB=druid
 
   # Need 3.5 or later for container nodes
-  zookeeper:
-    container_name: zookeeper
-    image: zookeeper:3.5
-    ports:
-      - "2181:2181"
-    environment:
-      - ZOO_MY_ID=1
+  # zookeeper:
+  #   container_name: zookeeper
+  #   image: zookeeper:3.5
+  #   ports:
+  #     - "2181:2181"
+  #   environment:
+  #     - ZOO_MY_ID=1
 
   coordinator:
     image: apache/druid:0.22.0
@@ -139,8 +139,8 @@ services:
       PRODUCE_TO_TOPIC: 'A'
       PROCESS_NAME: 'process_a'
       LOG_LEVEL: 'DEBUG'
-      KAFKA_ADDRESS: '192.168.1.40:9092'
-      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8087'
+      KAFKA_ADDRESS: '192.168.0.99:9092'
+      SCHEMA_REGISTRY_URL: 'http://192.168.0.99:8087'
       SLEEP_BETWEEN_SENDS_MILLIS: '1000'
     depends_on:
       - kafka
@@ -148,73 +148,73 @@ services:
       - schema-registry
 
   process_b:
-    image: test:0.1.2
-    environment:
-      SHOULD_INITIALIZE_PRODUCER: 'true'
-      SHOULD_INITIALIZE_CONSUMER: 'true'
-      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
-      CONSUME_FROM_TOPIC: 'A'
-      PRODUCE_TO_TOPIC: 'B'
-      PROCESS_NAME: 'process_b'
-      LOG_LEVEL: 'DEBUG'
-      KAFKA_ADDRESS: '192.168.1.40:9092'
-      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8087'
-      SLEEP_BETWEEN_SENDS_MILLIS: '15'
-    depends_on:
-      - kafka
-      - zookeeper
-      - schema-registry
-  process_c:
-    image: test:0.1.2
-    environment:
-      SHOULD_INITIALIZE_PRODUCER: 'true'
-      SHOULD_INITIALIZE_CONSUMER: 'true'
-      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
-      CONSUME_FROM_TOPIC: 'B'
-      PRODUCE_TO_TOPIC: 'C'
-      PROCESS_NAME: 'process_c'
-      LOG_LEVEL: 'DEBUG'
-      KAFKA_ADDRESS: '192.168.1.40:9092'
-      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8087'
-      SLEEP_BETWEEN_SENDS_MILLIS: '15'
-    depends_on:
-      - kafka
-      - zookeeper
-      - schema-registry
-  process_d:
-    image: test:0.1.2
-    environment:
-      SHOULD_INITIALIZE_PRODUCER: 'true'
-      SHOULD_INITIALIZE_CONSUMER: 'true'
-      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
-      CONSUME_FROM_TOPIC: 'C'
-      PRODUCE_TO_TOPIC: 'D'
-      LOG_LEVEL: 'DEBUG'
-      PROCESS_NAME: 'process_d'
-      KAFKA_ADDRESS: '192.168.1.40:9092'
-      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8087'
-      SLEEP_BETWEEN_SENDS_MILLIS: '15'
-    depends_on:
-      - kafka
-      - zookeeper
-      - schema-registry
-  process_e:
-    image: test:0.1.2
-    environment:
-      SHOULD_INITIALIZE_PRODUCER: 'true'
-      SHOULD_INITIALIZE_CONSUMER: 'true'
-      NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
-      CONSUME_FROM_TOPIC: 'D'
-      PRODUCE_TO_TOPIC: 'E'
-      PROCESS_NAME: 'process_e'
-      LOG_LEVEL: 'DEBUG'
-      KAFKA_ADDRESS: '192.168.1.40:9092'
-      SCHEMA_REGISTRY_URL: 'http://192.168.1.40:8081'
-      SLEEP_BETWEEN_SENDS_MILLIS: '15'
-    depends_on:
-      - kafka
-      - zookeeper
-      - schema-registry
+     image: test:0.1.2
+     environment:
+       SHOULD_INITIALIZE_PRODUCER: 'true'
+       SHOULD_INITIALIZE_CONSUMER: 'true'
+       NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+       CONSUME_FROM_TOPIC: 'A'
+       PRODUCE_TO_TOPIC: 'B'
+       PROCESS_NAME: 'process_b'
+       LOG_LEVEL: 'DEBUG'
+       KAFKA_ADDRESS: '192.168.0.99:9092'
+       SCHEMA_REGISTRY_URL: 'http://192.168.0.99:8087'
+       SLEEP_BETWEEN_SENDS_MILLIS: '15'
+     depends_on:
+       - kafka
+       - zookeeper
+       - schema-registry
+  # process_c:
+  #   image: test:0.1.2
+  #   environment:
+  #     SHOULD_INITIALIZE_PRODUCER: 'true'
+  #     SHOULD_INITIALIZE_CONSUMER: 'true'
+  #     NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+  #     CONSUME_FROM_TOPIC: 'B'
+  #     PRODUCE_TO_TOPIC: 'C'
+  #     PROCESS_NAME: 'process_c'
+  #     LOG_LEVEL: 'DEBUG'
+  #     KAFKA_ADDRESS: '192.168.0.99:9092'
+  #     SCHEMA_REGISTRY_URL: 'http://192.168.0.99:8087'
+  #     SLEEP_BETWEEN_SENDS_MILLIS: '15'
+  #   depends_on:
+  #     - kafka
+  #     - zookeeper
+  #     - schema-registry
+  # process_d:
+  #   image: test:0.1.2
+  #   environment:
+  #     SHOULD_INITIALIZE_PRODUCER: 'true'
+  #     SHOULD_INITIALIZE_CONSUMER: 'true'
+  #     NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+  #     CONSUME_FROM_TOPIC: 'C'
+  #     PRODUCE_TO_TOPIC: 'D'
+  #     LOG_LEVEL: 'DEBUG'
+  #     PROCESS_NAME: 'process_d'
+  #     KAFKA_ADDRESS: '192.168.0.99:9092'
+  #     SCHEMA_REGISTRY_URL: 'http://192.168.0.99:8087'
+  #     SLEEP_BETWEEN_SENDS_MILLIS: '15'
+  #   depends_on:
+  #     - kafka
+  #     - zookeeper
+  #     - schema-registry
+  # process_e:
+  #   image: test:0.1.2
+  #   environment:
+  #     SHOULD_INITIALIZE_PRODUCER: 'true'
+  #     SHOULD_INITIALIZE_CONSUMER: 'true'
+  #     NUMBER_OF_MESSAGES_TO_PRODUCE: '10'
+  #     CONSUME_FROM_TOPIC: 'D'
+  #     PRODUCE_TO_TOPIC: 'E'
+  #     PROCESS_NAME: 'process_e'
+  #     LOG_LEVEL: 'DEBUG'
+  #     KAFKA_ADDRESS: '192.168.0.99:9092'
+  #     SCHEMA_REGISTRY_URL: 'http://192.168.0.99:8081'
+  #     SLEEP_BETWEEN_SENDS_MILLIS: '15'
+  #   depends_on:
+  #     - kafka
+  #     - zookeeper
+  #     - schema-registry
       
   zookeeper:
     image: confluentinc/cp-zookeeper:5.4.1
@@ -239,7 +239,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://192.168.1.40:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://192.168.0.99:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1

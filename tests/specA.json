@@ -1,0 +1,113 @@
+{
+    "type": "kafka",
+    "spec": {
+      "dataSchema": {
+        "dataSource": "from_topic_a",
+        "timestampSpec": {
+          "column": "id.sendTimeMillis",
+          "format": "millis"
+        },
+        "dimensionsSpec": {
+          "dimensionExclusions": [],
+          "spatialDimensions": []
+        },
+        "granularitySpec": {
+          "queryGranularity": "hour",
+          "rollup": true,
+          "segmentGranularity": "hour"
+        },
+        "metricsSpec": [
+          {
+            "name": "count",
+            "type": "count"
+          },
+          {
+            "name": "sum_id.diffSinceSendMillis",
+            "type": "longSum",
+            "fieldName": "id.diffSinceSendMillis"
+          },
+          {
+            "name": "sum_id.startTimeMillis",
+            "type": "longSum",
+            "fieldName": "id.startTimeMillis"
+          },
+          {
+            "name": "sum_position.altitude",
+            "type": "doubleSum",
+            "fieldName": "position.altitude"
+          },
+          {
+            "name": "sum_position.latitude",
+            "type": "doubleSum",
+            "fieldName": "position.latitude"
+          },
+          {
+            "name": "sum_position.longitude",
+            "type": "doubleSum",
+            "fieldName": "position.longitude"
+          }
+        ]
+      },
+      "ioConfig": {
+        "topic": "A",
+        "inputFormat": {
+          "type": "avro_stream",
+          "avroBytesDecoder": {
+            "type": "schema_registry",
+            "url": "http://192.168.0.99:8087"
+          },
+          "flattenSpec": {
+            "fields": [
+              {
+                "name": "id.contextId",
+                "type": "path",
+                "expr": "$.id.contextId"
+              },
+              {
+                "name": "id.diffSinceSendMillis",
+                "type": "path",
+                "expr": "$.id.diffSinceSendMillis"
+              },
+              {
+                "name": "id.sendTimeMillis",
+                "type": "path",
+                "expr": "$.id.sendTimeMillis"
+              },
+              {
+                "name": "id.startTimeMillis",
+                "type": "path",
+                "expr": "$.id.startTimeMillis"
+              },
+              {
+                "name": "position.altitude",
+                "type": "path",
+                "expr": "$.position.altitude"
+              },
+              {
+                "name": "position.latitude",
+                "type": "path",
+                "expr": "$.position.latitude"
+              },
+              {
+                "name": "position.longitude",
+                "type": "path",
+                "expr": "$.position.longitude"
+              }
+            ]
+          }
+        },
+        "consumerProperties": {
+          "bootstrap.servers": "192.168.0.99:9092"
+        },
+        "taskCount": 1,
+        "replicas": 1,
+        "taskDuration": "PT1H",
+        "type": "kafka",
+        "useEarliestOffset": true
+      },
+      "tuningConfig": {
+        "type": "kafka",
+        "maxRowsPerSegment": 5000000
+      }
+    }
+  }
