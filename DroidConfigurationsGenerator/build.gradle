@@ -26,7 +26,10 @@ dependencies {
     implementation 'com.google.guava:guava:31.0.1-jre'
     // https://mvnrepository.com/artifact/io.confluent/kafka-schema-registry-client
     implementation 'io.confluent:kafka-schema-registry-client:7.0.1'
-
+// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.2'
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.2'
 }
 
 application {

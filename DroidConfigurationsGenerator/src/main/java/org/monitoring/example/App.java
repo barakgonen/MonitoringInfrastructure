@@ -6,15 +6,12 @@ package org.monitoring.example;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.confluent.kafka.schemaregistry.ParsedSchema;
-import io.confluent.kafka.schemaregistry.avro.AvroSchema;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import org.apache.avro.Schema;
+import org.checkerframework.checker.units.qual.A;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,11 +19,11 @@ import java.util.HashMap;
 public class App {
     public static void main(String[] args) {
         // Getting all schemas from schema registry
-        CachedSchemaRegistryClient schemaRegistryClient = new CachedSchemaRegistryClient("http://192.168.0.99:8087", 1000);
+        CachedSchemaRegistryClient schemaRegistryClient = new CachedSchemaRegistryClient("http://192.168.1.40:8087", 1000);
 
         try {
             Collection<String> subjects = schemaRegistryClient.getAllSubjects();
-            HashMap<VersionedSchema, ParsedSchema> versionedSchemaSchemaMapper = new HashMap<>();
+            HashMap<VersionedSchema, Schema> versionedSchemaSchemaMapper = new HashMap<>();
             subjects.forEach(subject -> {
                 try {
                     Collection<Integer> versions = schemaRegistryClient.getAllVersions(subject);
@@ -34,8 +31,10 @@ public class App {
                         VersionedSchema versionedSchema = new VersionedSchema(id, subject);
                         if (!versionedSchemaSchemaMapper.containsKey(versionedSchema)) {
                             try {
-                                ParsedSchema schema = schemaRegistryClient.getSchemaBySubjectAndId(subject, id);
-                                versionedSchemaSchemaMapper.put(versionedSchema, schema);
+                                ParsedSchema parsedSchema = schemaRegistryClient.getSchemaBySubjectAndId(subject, id);
+                                Schema.Parser schemaParser = new Schema.Parser();
+                                Schema avroSchema = schemaParser.parse(parsedSchema.canonicalString());
+                                versionedSchemaSchemaMapper.put(versionedSchema, avroSchema);
                             } catch (IOException | RestClientException e) {
                                 e.printStackTrace();
                             }
@@ -55,9 +54,9 @@ public class App {
                 DataSchema dataSchema = new DataSchema(dataSource, timestampSpec, dimensionsSpec, granularitySpec);
                 String topic = versionedSchema.getTopicName();
                 String inputFormatType = "avro_stream";
-                AvroBytesDecoder avroBytesDecoder = new AvroBytesDecoder("schema_registry", "http://192.168.0.99:8087");
+                AvroBytesDecoder avroBytesDecoder = new AvroBytesDecoder("schema_registry", "http://192.168.1.40:8087");
                 InputFormat inputFormat = new InputFormat(inputFormatType, avroBytesDecoder, parseFlattenSpec(parsedSchema));
-                ConsumerProperties consumerProperties = new ConsumerProperties("192.168.0.99:9092");
+                ConsumerProperties consumerProperties = new ConsumerProperties("192.168.1.40:9092");
                 int replicas = 1;
                 int taskCount = 1;
                 String taskDuration = "PT1H";
@@ -75,70 +74,42 @@ public class App {
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
+                System.out.println(json);
 
-                byte[] out = json.getBytes(StandardCharsets.UTF_8);
-                int length = out.length;
-                URL url = null;
-                try {
-                    url = new URL("http://localhost:8888/druid/indexer/v1/supervisor");
-                    URLConnection con = url.openConnection();
-                    HttpURLConnection http = (HttpURLConnection)con;
-                    http.setRequestMethod("POST"); // PUT is another valid option
-                    http.setDoOutput(true);
-                    http.setFixedLengthStreamingMode(length);
-                    http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                    http.connect();
-                    try(OutputStream os = http.getOutputStream()) {
-                        os.write(out);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                byte[] out = json.getBytes(StandardCharsets.UTF_8);
+//                int length = out.length;
+//                URL url = null;
+//                try {
+//                    url = new URL("http://localhost:8888/druid/indexer/v1/supervisor");
+//                    URLConnection con = url.openConnection();
+//                    HttpURLConnection http = (HttpURLConnection)con;
+//                    http.setRequestMethod("POST"); // PUT is another valid option
+//                    http.setDoOutput(true);
+//                    http.setFixedLengthStreamingMode(length);
+//                    http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+//                    http.connect();
+//                    try(OutputStream os = http.getOutputStream()) {
+//                        os.write(out);
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             });
         } catch (IOException | RestClientException ignored) {
             ignored.printStackTrace();
         }
     }
 
-    private static FlattenSpec parseFlattenSpec(ParsedSchema schema) {
-        HashMap<String, Object> elements = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ArrayList<Field> schemaFlatFields = flatSchema((AvroSchema) schema);
-        return new FlattenSpec(schemaFlatFields);
-//        elements.put("fields", new FlattenSpec(schemaFlatFields));
-//        String json = null;
-//        try {
-//            json = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(elements);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println(json);
-    }
-
-    private static ArrayList<Field> flatSchema(AvroSchema schema) {
-        String parent = "";
+    private static FlattenSpec parseFlattenSpec(Schema schema) {
         ArrayList<Field> fields = new ArrayList<>();
-        schema.rawSchema().getFields().forEach(field -> {
-            if (field.schema().getType() != Schema.Type.RECORD) {
-                fields.add(new Field(parent + "." + schema.name(), "path", "$." + parent + "." + schema.name()));
-            } else {
-                fields.addAll(flatRecord(field, field.name()));
-            }
+        AvroFlattener avroFlattener = new AvroFlattener();
+        Schema dest = avroFlattener.flatten(schema, true);
+
+        dest.getFields().stream().forEach(field -> {
+            String fieldName = field.name();
+            fieldName = fieldName.replaceAll("__", ".");
+            fields.add(new Field(fieldName, "path", "$." + fieldName));
         });
-
-        return fields;
-    }
-
-    private static ArrayList<Field> flatRecord(Schema.Field schema, String parentName) {
-        ArrayList<Field> fields = new ArrayList<>();
-        schema.schema().getFields().forEach(field -> {
-            if (field.schema().getType() != Schema.Type.RECORD) {
-                fields.add(new Field(parentName + "." + field.name(), "path", "$." + parentName + "." + field.name()));
-            } else {
-                fields.addAll(flatRecord(field, parentName + "." + field.name()));
-            }
-        });
-
-        return fields;
+        return new FlattenSpec(fields);
     }
 }
