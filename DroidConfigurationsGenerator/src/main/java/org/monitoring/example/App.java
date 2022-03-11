@@ -9,9 +9,13 @@ import io.confluent.kafka.schemaregistry.ParsedSchema;
 import io.confluent.kafka.schemaregistry.client.CachedSchemaRegistryClient;
 import io.confluent.kafka.schemaregistry.client.rest.exceptions.RestClientException;
 import org.apache.avro.Schema;
-import org.checkerframework.checker.units.qual.A;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,7 +50,7 @@ public class App {
             });
             versionedSchemaSchemaMapper.forEach((versionedSchema, parsedSchema) -> {
 
-                String dataSource = "BG_2from_topic_" + versionedSchema.getTopicName();
+                String dataSource = "BG_" + versionedSchema.getTopicName();
                 TimestampSpec timestampSpec = new TimestampSpec("id.sendTimeMillis", "millis");
                 DimensionsSpec dimensionsSpec = new DimensionsSpec();
                 GranularitySpec granularitySpec = new GranularitySpec("hour", true, "hour");
@@ -76,24 +80,24 @@ public class App {
                 }
                 System.out.println(json);
 
-//                byte[] out = json.getBytes(StandardCharsets.UTF_8);
-//                int length = out.length;
-//                URL url = null;
-//                try {
-//                    url = new URL("http://localhost:8888/druid/indexer/v1/supervisor");
-//                    URLConnection con = url.openConnection();
-//                    HttpURLConnection http = (HttpURLConnection)con;
-//                    http.setRequestMethod("POST"); // PUT is another valid option
-//                    http.setDoOutput(true);
-//                    http.setFixedLengthStreamingMode(length);
-//                    http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-//                    http.connect();
-//                    try(OutputStream os = http.getOutputStream()) {
-//                        os.write(out);
-//                    }
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+                byte[] out = json.getBytes(StandardCharsets.UTF_8);
+                int length = out.length;
+                URL url = null;
+                try {
+                    url = new URL("http://localhost:8888/druid/indexer/v1/supervisor");
+                    URLConnection con = url.openConnection();
+                    HttpURLConnection http = (HttpURLConnection) con;
+                    http.setRequestMethod("POST"); // PUT is another valid option
+                    http.setDoOutput(true);
+                    http.setFixedLengthStreamingMode(length);
+                    http.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    http.connect();
+                    try (OutputStream os = http.getOutputStream()) {
+                        os.write(out);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             });
         } catch (IOException | RestClientException ignored) {
             ignored.printStackTrace();
